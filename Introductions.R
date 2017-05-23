@@ -23,6 +23,7 @@
 
 rm(list=ls())
 library(ggplot2)
+library(ggrepel)
 load("MolEcolIntroTDM.rda")
 load("MolEcolIntroSummary.rda")
 
@@ -42,10 +43,42 @@ for( col in colnames(TermMatrix) ) {
   TermMatrix[, colnames(TermMatrix)==col] <- x
 }
 
-df <- data.frame( VolIss = data$VolIss, delta=NA )
-for( i in 2:ncol(TermMatrix) ){
-  x1 <- TermMatrix[,(i-1)]
-  x2 <- TermMatrix[,i]
-  dist <- sum(sqrt( (x1-x2)**2 ))
+df <- data.frame( VolIss = colnames(TermMatrix), 
+                  delta=NA,  
+                  variance=NA )
+
+df$Labels = NA
+special_issues <- c("1003","1304","1701","1916","1917","2409","2203","2005","2103","2108","2203","2211",
+                    "2306","2315","2909","2501","2508","2511","2601","2607")
+for( issue in special_issues ) {
+  df$Labels[ df$VolIss == issue ] <- issue
+}
+
+
+# Find Issue Deviance from overall mean
+molEcolCentroid <- rowSums(m) / ncol(m)
+for( i in 1:ncol(TermMatrix) ){
+  x <- TermMatrix[,i]
+  dist <- sum(sqrt( (x-molEcolCentroid)**2 ))
   df$delta[i] <- dist 
 }
+
+# Find Variation around issue
+for( i in 1:ncol(TermMatrix) ) {
+  
+}
+
+
+
+
+
+ggplot(df,aes(x=VolIss,y=delta)) + geom_point()  + 
+  geom_text_repel( aes(label=Labels)) + 
+  xlab("Time") + ylab("Deviance from Journal Centroid") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour="grey50"))
+
