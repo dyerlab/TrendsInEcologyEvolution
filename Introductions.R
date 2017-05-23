@@ -22,4 +22,30 @@
 
 
 rm(list=ls())
+library(ggplot2)
 load("MolEcolIntroTDM.rda")
+load("MolEcolIntroSummary.rda")
+
+
+# summarize by issue.
+data$VolIss <- data$Volume*100 + data$Issue 
+
+
+# Make an issue coordinate matrix
+TermMatrix <- matrix(0, nrow=nrow(m), ncol=length(unique(data$VolIss)))
+colnames(TermMatrix) <- unique( data$VolIss )
+rownames(TermMatrix) <- rownames(m)
+
+for( col in colnames(TermMatrix) ) {
+  files <- data$Files[ data$VolIss == col ]
+  x <- rowSums( m[, colnames(m) %in% files] ) / length(files)
+  TermMatrix[, colnames(TermMatrix)==col] <- x
+}
+
+df <- data.frame( VolIss = data$VolIss, delta=NA )
+for( i in 2:ncol(TermMatrix) ){
+  x1 <- TermMatrix[,(i-1)]
+  x2 <- TermMatrix[,i]
+  dist <- sum(sqrt( (x1-x2)**2 ))
+  df$delta[i] <- dist 
+}
