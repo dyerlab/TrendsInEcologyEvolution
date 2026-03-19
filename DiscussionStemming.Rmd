@@ -1,0 +1,25 @@
+---
+title: "Discussion Stemming"
+author: "R.J. Dyer"
+date: "12/14/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## The Data
+
+```{r}
+raw_files <- list.files(path = "./Evolution", pattern="*.txt",full.names = TRUE, recursive = TRUE)
+```
+
+Providing $N =$`r length(raw_files)` 
+
+
+```{r}
+
+```
+
